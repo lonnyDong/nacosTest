@@ -1,0 +1,107 @@
+app:
+    id: billing-service
+apollo:
+    cacheDir: /tmp
+    bootstrap:
+        #项目启动的bootstrap阶段，向Spring容器注入被托管的namespaces （如果这里的值设置为false表示不使用Apollo提供的功能）
+        enabled: true
+        #创建私有的application.yml 和application-env.yml 命名空间，把原来的配置以及apollo相关的配置项全部粘贴进去，发布配置。
+        namespaces:  application.yml,application-env.yml
+server:
+    port: 8102
+    servlet:
+        context-path: /receivable/billing-service
+spring:
+    application:
+        name: receivables-billing-service
+    profiles:
+        active: dev
+
+    messages:
+        basename: i18n/messages
+    http:
+        encoding:
+        charset: UTF-8
+        enabled: true
+        force: true
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://192.168.20.162:3060/asset?useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: defang#root#2018
+        poolPingConnectionsNotUsedFor: 60000
+        removeAbandoned: true
+        connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+        minIdle: 1
+        validationQuery: SELECT 1 FROM DUAL
+        initialSize: 5
+        maxWait: 60000
+        poolPreparedStatements: false
+        filters: stat,wall
+        testOnBorrow: false
+        testWhileIdle: true
+        minEvictableIdleTimeMillis: 300000
+        timeBetweenEvictionRunsMillis: 60000
+        testOnReturn: false
+        maxActive: 50
+        druid:
+            user: admin
+            password: admin
+    jpa:
+        hibernate:
+            ddl-auto: none
+            show-sql: true
+    dubbo:
+        server: true
+        registry: zookeeper://192.168.10.233:2181?backup=192.168.10.233:2182,192.168.10.233:2183
+        provider:
+            port: 20883
+            filter: providerFilter
+        consumer:
+            filter: consumerFilter
+    redis:
+        cluster:
+            max-redirects: 3
+            nodes: 192.168.10.233:6379,192.168.10.233:6380,192.168.10.233:6381,192.168.10.233:6382,192.168.10.233:6383,192.168.10.233:6384
+        database: 0
+        password: defangchaintest
+        pool:
+            max-active: 8
+            max-idle: 8
+            max-wait: -1
+            min-idle: 0
+        ssl: false
+        timeout: 5000
+rocketmq:
+    groupName: DefangMessage
+    instanceName: mq_message
+    namesrvAddr: rocketmq.defangchain.com:9876
+    messageModel: CLUSTERING
+auth:
+    sso:
+        anonPattern: /receivable/asset/swagger*/**;/receivable/asset/webjars/**;/receivable/asset/v2/**;/receivable/asset/csrf
+asset:
+    needApprove: false
+    needRecheck: true
+    needSignInApprove: true
+    needSignInRecheck: true
+    cochain:
+        url: http://192.168.20.162:9081/fabric/asset/data/set
+        version: 0.0.1
+    liquidation: 
+        days: 0
+    overtime:
+        hours: 48        
+export: 
+    coreOrgAsset: 
+        subject: 签发凭证统计
+        titles: 
+            -期限
+            -交易金额
+            -凭证数量
+        fileName: 签发凭证统计-%s.xlsx
+        sheetName: 收支统计报表
+fabric:
+    api:
+        url: http://39.108.83.226:8524/fabric/system/chaincode/invoke
+filePreviewUrl: https://receivable-api-dev.defangchain.com/receivable/signin/file/preview/

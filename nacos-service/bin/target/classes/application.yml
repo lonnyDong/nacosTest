@@ -1,0 +1,21 @@
+app:
+    id: billing-service
+apollo:
+    cacheDir: /tmp
+    bootstrap:
+        #项目启动的bootstrap阶段，向Spring容器注入被托管的namespaces （如果这里的值设置为false表示不使用Apollo提供的功能）
+        enabled: true
+        #创建私有的application.yml 和application-env.yml 命名空间，把原来的配置以及apollo相关的配置项全部粘贴进去，发布配置。
+        namespaces:  application.yml,application-env.yml
+server:
+    port: 8102
+    servlet:
+        context-path: /receivable/billing-service
+spring:
+    application:
+        name: receivables-billing-service
+    profiles:
+        active: dev
+auth:
+    sso:
+        anonPattern: /mq/**;/swagger*/**;/webjars/**;/v2/**;/csrf;

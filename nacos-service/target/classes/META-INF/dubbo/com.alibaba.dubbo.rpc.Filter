@@ -1,0 +1,2 @@
+consumerFilter=com.defang.tracer.dubbo.DubboConsumerFilter
+providerFilter=com.defang.tracer.dubbo.DubboProviderFilter

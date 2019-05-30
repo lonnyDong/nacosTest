@@ -1,0 +1,9 @@
+server:
+    port: 8586
+    servlet:
+        context-path: /nacos-service
+spring:
+    application:
+        name: nacos-service
+    profiles:
+        active: dev
